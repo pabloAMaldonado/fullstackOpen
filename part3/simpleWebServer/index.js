@@ -6,8 +6,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const app = express()
 
-const Number = require('./src/Component/model.js')
-const db = require('./src/Component/db.json')
+const Number = require('./src/model.js')
 
 require('dotenv').config()
 
@@ -18,11 +17,14 @@ const url =
 
 mongoose.set('strictQuery',false)
 
-mongoose.connect(url)
+mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000
+})
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Failed to connect to MongoDB', err))
 
-const quant = db.length
 const date = new Date()
 
 morgan.token('body', (req) => JSON.stringify(req.body))
