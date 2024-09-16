@@ -1,21 +1,23 @@
 
 import { useState, useEffect } from 'react'
+import './app.css'
+
 import Blog from './components/Blog'
 
 import blogService from './services/blogService'
 import loginService from './services/loginService'
 import postLogout from './services/logoutService'
+import Notification from './components/Notification'
 
 const App = () => {
   const [user, setUser] = useState(null)
   const [blogs, setBlogs] = useState([])
-  const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [noti, setNoti] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -45,16 +47,14 @@ const App = () => {
         setUsername('')
         setPassword('')
       } catch (exception) {
-        setErrorMessage('Wrong credentials')
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+        Notification.updNoti(setNoti, {status: exception.response.status, message: `Error, ${exception.response.data.error}`})
       }
     }
 
     return (
 
       <>
+      <Notification.Notification noti={noti} />
       <h1>Login</h1>
       <form onSubmit={handleLogin}>
         <div>
@@ -82,7 +82,6 @@ const App = () => {
   }
 
   const displayBlogs = () => {
-    console.log(blogs)
     return(
       <>
       <h2>blogs</h2>
@@ -101,24 +100,23 @@ const App = () => {
       event.preventDefault()
 
       try {
-        const post = await blogService.newBlog(
+        const postCall = await blogService.newBlog(
          {title, author, url}
         )
-
+        const post = postCall.data
         setBlogs([...blogs, post])
+        Notification.updNoti(setNoti, {status: postCall.status, message: 'Blog posted Successfully'})
         setTitle('')
         setAuthor('')
         setUrl('')
       } catch (exception) {
-        setErrorMessage('Error on posting')
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+        Notification.updNoti(setNoti, {status: exception.response.status, message: `Error on posting, ${exception.response.statusText}`})
       }
     }
 
     return (
       <>
+      <Notification.Notification noti={noti} />
       <h1>Post a Blog</h1>
       <form onSubmit={handleNewBlog}>
         <div>

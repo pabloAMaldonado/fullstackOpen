@@ -2,7 +2,8 @@
 import axios from 'axios'
 const baseUrl = '/api/blogs'
 
-let token = null
+const savedUser = JSON.parse(window.localStorage.getItem('user'))
+let token = savedUser.token || null
 
 const setToken = newToken => {
   token = `Bearer ${newToken}`
@@ -17,10 +18,19 @@ const newBlog = async (newObject) => {
   const config = {
     headers: { Authorization: token },
   }
-
   const response = await axios.post(baseUrl, newObject, config)
-  return response.data
+  return response
 }
+
+const initializeToken = () => {
+  const savedUser = JSON.parse(window.localStorage.getItem('user'))
+  if (savedUser) {
+    setToken(savedUser.token)
+  }
+}
+
+initializeToken()
+
 export default {
   getAll,
   setToken,
