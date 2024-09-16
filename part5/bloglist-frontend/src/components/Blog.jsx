@@ -1,7 +1,12 @@
 
 const Blog = ({ blog }) => (
   <div>
-    {blog.title} {blog.author}
+    <p>
+      <a href={blog.url} target="_blank" rel="noopener noreferrer">
+        {blog.title}
+      </a> author: {blog.author}
+    </p>
+
   </div>  
 )
 
