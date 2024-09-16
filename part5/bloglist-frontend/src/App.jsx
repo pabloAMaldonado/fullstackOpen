@@ -4,6 +4,7 @@ import Blog from './components/Blog'
 
 import blogService from './services/blogs'
 import loginService from './services/loginService'
+import postLogout from './services/logoutService'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -13,12 +14,21 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+      setBlogs(blogs)
+    )
   }, [])
 
+  useEffect(() => {
+    const savedUser = JSON.parse(window.localStorage.getItem('user'))
+    if (savedUser) {
+      setUser(savedUser)
+    }
+    console.log(savedUser, user)
+
+  }, [])
 
   const loginForm = () => {
 
@@ -30,6 +40,7 @@ const App = () => {
         )
 
         setUser(user)
+        window.localStorage.setItem('user', JSON.stringify(user))
         setUsername('')
         setPassword('')
       } catch (exception) {
@@ -74,7 +85,7 @@ const App = () => {
     return(
       <>
       <h2>blogs</h2>
-      <p>{user.name} logged in</p>
+      <p>{user.name} logged in</p> <button onClick={(event) => postLogout(event, 'user')}>Logout</button>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
