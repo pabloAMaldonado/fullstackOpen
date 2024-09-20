@@ -3,7 +3,7 @@ import axios from 'axios'
 const baseUrl = '/api/blogs'
 
 const savedUser = JSON.parse(window.localStorage.getItem('user'))
-let token = savedUser.token || null
+let token = savedUser ? savedUser.token : null
 
 const setToken = newToken => {
   token = `Bearer ${newToken}`
