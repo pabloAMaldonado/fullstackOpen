@@ -29,6 +29,14 @@ const initializeToken = () => {
   }
 }
 
+const likeBlog = async ({blog}) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  
+  const response = await axios.put(baseUrl+`api/blogs/like/${blog.id}`, newObject, config)
+}
+
 initializeToken()
 
 export default {

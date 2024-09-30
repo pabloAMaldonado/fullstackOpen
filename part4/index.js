@@ -44,6 +44,7 @@ app.post('/api/blogs', middleware.tokenExtractor, blogController.postBlog)
 app.delete('/api/blogs/:id', middleware.tokenExtractor, blogController.deleteBlog)
 app.put('/api/blogs/:id', middleware.tokenExtractor, blogController.updateBlog)
 
+app.put('api/blogs/like/:id', middleware.tokenExtractor, blogController.likeBlog)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

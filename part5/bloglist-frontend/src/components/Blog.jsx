@@ -1,25 +1,92 @@
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import blogService from '../services/blogService'
 import Notification from './Notification'
 
-const Blog = ({ blog }) => (
-  <div>
-    <p>
-      <a href={blog.url} target="_blank" rel="noopener noreferrer">
-        {blog.title}
-      </a> author: {blog.author}
-    </p>
+const Blog = ({ blog, isFull, toggleExpand }) => {
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
 
-  </div>  
-)
+  console.log('blog', blog)
 
-const displayBlogs = ({ blogs }) => {
-  return(
+  return (
+    <div style={blogStyle}>
+      {isFull ? (
+        <>
+          <p>
+            <a href={blog.url} target="_blank" rel="noopener noreferrer">
+              {blog.title}
+            </a>
+            <button onClick={toggleExpand} style={{ cursor: 'pointer' }}>hide</button>
+          </p>
+          <p>{blog.author}</p>
+          <p>{blog.likes} Likes</p>
+          <LikeButton blogId={blog.id} />
+        </>
+      ) : (
+        <>
+          <a href={blog.url} target="_blank" rel="noopener noreferrer">
+            {blog.title}
+          </a>
+          <button onClick={toggleExpand} style={{ cursor: 'pointer' }}>view</button>
+        </>
+      )}
+    </div>
+  )
+}
+
+const LikeButton = ({ blogId }) => {
+
+  const handleLike = () => {
+
+  }
+
+  return (
+    <button onClick={handleLike}>
+      Like
+    </button>
+  )
+}
+  
+const DisplayBlogs = ({ blogs }) => {
+  const [expandedBlogs, setExpandedBlogs] = useState({})
+
+  useEffect(() => {
+    if (blogs && blogs.length > 0) {
+      const initialExpandedState = blogs.reduce((acc, blog) => {
+        acc[blog.id] = true
+        return acc
+      }, {})
+      setExpandedBlogs(initialExpandedState)
+    }
+  }, [blogs])
+
+  const toggleExpand = (id) => {
+    setExpandedBlogs(prevState => ({
+      ...prevState,
+      [id]: !prevState[id]
+    }))
+  }
+
+  if (!blogs || blogs.length === 0) {
+    return <p>Loading blogs...</p>
+  }
+
+  return (
     <>
-    {blogs.map(blog =>
-      <Blog key={blog.id} blog={blog} />
-    )}
+      {blogs.map(blog => (
+        <Blog 
+          key={blog.id} 
+          blog={blog} 
+          isFull={!expandedBlogs[blog.id]} 
+          toggleExpand={() => toggleExpand(blog.id)} 
+        />
+      ))}
     </>
   )
 }
@@ -89,6 +156,6 @@ const formBlogs = ({ setShow, blogs, setBlogs, setNoti }) => {
 
 export default {
   Blog,
-  displayBlogs,
+  DisplayBlogs,
   formBlogs
 }

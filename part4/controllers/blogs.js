@@ -49,7 +49,6 @@ exports.updateBlog = async (req, res) => {
   const { id } = req.params
   const blogData = req.body
 
-
   const user = await User.findById(req.user)
 
   const blog = await Blog.findById(id)
@@ -72,4 +71,19 @@ exports.updateBlog = async (req, res) => {
   })
 
   res.status(200).json(updatedBlog)
+}
+
+exports.likeBlog = async (req, res) => {
+  const { id } = req.params
+  const updatedObj = await Blog.findById(
+    id,
+    { $inc: { likes: 1 } },
+    { new: true }
+  )
+
+  if (!updatedObj) {
+    return res.status(404).json({ message: 'Object not found' });
+  }
+
+  res.status(200).json(updatedObj)
 }
