@@ -29,12 +29,27 @@ const initializeToken = () => {
   }
 }
 
-const likeBlog = async ({blog}) => {
+const likeBlog = async (blog) => {
   const config = {
     headers: { Authorization: token },
   }
-  
-  const response = await axios.put(baseUrl+`api/blogs/like/${blog.id}`, newObject, config)
+  console.log(blog)
+  const response = await axios.put(baseUrl+`/like/${blog.id}`, blog, config)
+
+  blog = response.data
+
+  return response
+}
+
+const removeBlog = async (blog) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  const response = await axios.delete(baseUrl+`/${blog.id}`, config)
+  console.log(response)
+
+  return response
 }
 
 initializeToken()
@@ -42,5 +57,7 @@ initializeToken()
 export default {
   getAll,
   setToken,
-  newBlog
+  newBlog,
+  likeBlog,
+  removeBlog
 }

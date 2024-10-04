@@ -14,13 +14,12 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [noti, setNoti] = useState(null)
   const [showBlogForm, setShowBlogForm] = useState(false)
-  const [updData, setUpdData] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
-  }, [updData])
+  }, [])
 
   useEffect(() => {
     const savedUser = JSON.parse(window.localStorage.getItem('user'))
@@ -29,17 +28,15 @@ const App = () => {
     }
   }, [])
 
-
   return (
     <div>
       <Notification.Notification noti={noti} />
 
       {user === null && <
-        LoginForm 
-          noti={noti}
-          setNoti={setNoti}
-          setUser={setUser}
-        />}
+        LoginForm
+        setNoti={setNoti}
+        setUser={setUser}
+      />}
 
       {user !== null && (
         <>
@@ -50,20 +47,20 @@ const App = () => {
       )}
 
       {user !== null && showBlogForm &&  <
-        Blog.formBlogs
-          setShow={setShowBlogForm}
-          blogs={blogs}
-          setBlogs={setBlogs}
-          setNoti={setNoti}
-        />
+        Blog.FormBlogs
+        setShow={setShowBlogForm}
+        blogs={blogs}
+        setBlogs={setBlogs}
+        setNoti={setNoti}
+      />
       }
 
       <br/>
 
-      {showBlogForm === false && <button onClick={() => setShowBlogForm(true)}>New Blog</button>}
+      {showBlogForm === false &&  user !== null && <button onClick={() => setShowBlogForm(true)}>New Blog</button>}
 
       {user !== null && (
-        <Blog.DisplayBlogs blogs={blogs} />
+        <Blog.DisplayBlogs blogs={blogs} setBlogs={setBlogs}/>
       )}
 
     </div>
