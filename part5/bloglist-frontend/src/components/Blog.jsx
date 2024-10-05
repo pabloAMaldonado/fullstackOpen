@@ -14,26 +14,37 @@ const Blog = ({ blog, blogs, setBlogs, isFull, toggleExpand }) => {
     marginBottom: 5
   }
 
+  const handleLike = async () => {
+    try {
+      await blogService.likeBlog(blog)
+
+      setBlogs(blogs.map(b =>
+        b.id === blog.id ? { ...b, likes: b.likes + 1 } : b
+      ))
+    } catch (error) {
+      console.error('Error updating likes:', error)
+    }
+  }
+
   return (
     <div style={blogStyle}>
       {isFull ? (
         <>
           <p>
-            <a href={blog.url} target="_blank" rel="noopener noreferrer">
-              {blog.title}
-            </a>
+            {blog.title}
             <button onClick={toggleExpand} style={{ cursor: 'pointer' }}>hide</button>
           </p>
           <p>{blog.author}</p>
+          <p>Url: <a href={blog.url} target="_blank" rel="noopener noreferrer">
+            {blog.url}
+          </a></p>
           <p>{blog.likes} Likes</p>
-          <LikeButton blog={blog} setBlogs={setBlogs} blogs={blogs}/>
+          <LikeButton handleLike={handleLike}/>
           <RemoveButton blog={blog} setBlogs={setBlogs} blogs={blogs}/>
         </>
       ) : (
         <>
-          <a href={blog.url} target="_blank" rel="noopener noreferrer">
-            {blog.title}
-          </a>
+          {blog.title} by {blog.author}
           <button onClick={toggleExpand} style={{ cursor: 'pointer' }}>view</button>
         </>
       )}
@@ -60,19 +71,7 @@ const RemoveButton = ({ blogs, blog, setBlogs }) => {
   )
 }
 
-const LikeButton = ({ blogs, blog, setBlogs }) => {
-
-  const handleLike = async () => {
-    try {
-      await blogService.likeBlog(blog)
-
-      setBlogs(blogs.map(b =>
-        b.id === blog.id ? { ...b, likes: b.likes + 1 } : b
-      ))
-    } catch (error) {
-      console.error('Error updating likes:', error)
-    }
-  }
+const LikeButton = ({ handleLike }) => {
 
   return (
     <button onClick={handleLike}>
@@ -158,6 +157,7 @@ const FormBlogs = ({ setShow, blogs, setBlogs, setNoti }) => {
             type="text"
             value={title}
             name="title"
+            placeholder='title'
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
@@ -167,6 +167,7 @@ const FormBlogs = ({ setShow, blogs, setBlogs, setNoti }) => {
             type="text"
             value={author}
             name="author"
+            placeholder='author'
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
@@ -176,6 +177,7 @@ const FormBlogs = ({ setShow, blogs, setBlogs, setNoti }) => {
             type="text"
             value={url}
             name="url"
+            placeholder='url'
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
@@ -196,5 +198,6 @@ FormBlogs.propTypes = {
 export default {
   Blog,
   DisplayBlogs,
-  FormBlogs
+  FormBlogs,
+  LikeButton
 }
