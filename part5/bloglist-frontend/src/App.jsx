@@ -60,7 +60,7 @@ const App = () => {
       {showBlogForm === false &&  user !== null && <button onClick={() => setShowBlogForm(true)}>New Blog</button>}
 
       {user !== null && (
-        <Blog.DisplayBlogs blogs={blogs} setBlogs={setBlogs}/>
+        <Blog.DisplayBlogs blogs={blogs} setBlogs={setBlogs} setNoti={setNoti}/>
       )}
 
     </div>

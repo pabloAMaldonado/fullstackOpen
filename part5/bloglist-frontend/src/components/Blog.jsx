@@ -5,7 +5,9 @@ import PropTypes from 'prop-types'
 import blogService from '../services/blogService'
 import Notification from './Notification'
 
-const Blog = ({ blog, blogs, setBlogs, isFull, toggleExpand }) => {
+const savedUser = JSON.parse(window.localStorage.getItem('user'))
+
+const Blog = ({ blog, blogs, setBlogs, isFull, toggleExpand, setNoti }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -27,7 +29,7 @@ const Blog = ({ blog, blogs, setBlogs, isFull, toggleExpand }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       {isFull ? (
         <>
           <p>
@@ -38,9 +40,9 @@ const Blog = ({ blog, blogs, setBlogs, isFull, toggleExpand }) => {
           <p>Url: <a href={blog.url} target="_blank" rel="noopener noreferrer">
             {blog.url}
           </a></p>
-          <p>{blog.likes} Likes</p>
+          <p className='likes' >{blog.likes} Likes</p>
           <LikeButton handleLike={handleLike}/>
-          <RemoveButton blog={blog} setBlogs={setBlogs} blogs={blogs}/>
+          <RemoveButton blog={blog} setBlogs={setBlogs} blogs={blogs} setNoti={setNoti}/>
         </>
       ) : (
         <>
@@ -52,35 +54,41 @@ const Blog = ({ blog, blogs, setBlogs, isFull, toggleExpand }) => {
   )
 }
 
-const RemoveButton = ({ blogs, blog, setBlogs }) => {
+const RemoveButton = ({ blogs, blog, setBlogs, setNoti }) => {
 
   const handleRemove = async () => {
     try {
       const updatedBlogs = blogs.filter(b => b.id !== blog.id)
       setBlogs(updatedBlogs)
 
-      await blogService.removeBlog(blog)
-    } catch (error) {
-      console.error('Error updating likes:', error)
+      const removeCall = await blogService.removeBlog(blog)
+      Notification.updNoti(setNoti, { status: removeCall.status, message: 'Blog deleted Successfully' })
+    } catch (exception) {
+      Notification.updNoti(setNoti, { status: exception.response.status, message: `Error on deleting, ${exception.response.statusText}` })
     }
   }
-  return (
-    <button onClick={handleRemove}>
-      Remove
-    </button>
-  )
+
+  if (blog.user.username === savedUser.username) {
+    return (
+      <button onClick={handleRemove}>
+        Remove
+      </button>
+    )
+  }
+
+  return null
 }
 
 const LikeButton = ({ handleLike }) => {
 
   return (
-    <button onClick={handleLike}>
+    <button id='Like' onClick={handleLike}>
       Like
     </button>
   )
 }
 
-const DisplayBlogs = ({ blogs, setBlogs }) => {
+const DisplayBlogs = ({ blogs, setBlogs, setNoti }) => {
   const [expandedBlogs, setExpandedBlogs] = useState({})
 
   let blogSorted = blogs.sort((a, b) => b.likes - a.likes)
@@ -102,8 +110,11 @@ const DisplayBlogs = ({ blogs, setBlogs }) => {
     }))
   }
 
-  if (!blogs || blogs.length === 0) {
+  if (!blogs) {
     return <p>Loading blogs...</p>
+  }
+  else if (blogs.length === 0) {
+    return <p>No blogs...</p>
   }
 
   return (
@@ -115,6 +126,7 @@ const DisplayBlogs = ({ blogs, setBlogs }) => {
           blogs={blogs}
           setBlogs={setBlogs}
           isFull={!expandedBlogs[blog.id]}
+          setNoti={setNoti}
           toggleExpand={() => toggleExpand(blog.id)}
         />
       ))}
@@ -136,6 +148,8 @@ const FormBlogs = ({ setShow, blogs, setBlogs, setNoti }) => {
         { title, author, url }
       )
       const post = postCall.data
+      console.log('post', post)
+
       setBlogs([...blogs, post])
       Notification.updNoti(setNoti, { status: postCall.status, message: 'Blog posted Successfully' })
       setTitle('')

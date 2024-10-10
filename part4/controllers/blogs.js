@@ -14,6 +14,9 @@ exports.postBlog = async (req, res) => {
   const data = req.body
 
   const user = await User.findById(req.user)
+  const userObject = user.toJSON()
+  
+  delete userObject.password 
   
   const newBlog = new Blog({
     ...data,
@@ -21,7 +24,12 @@ exports.postBlog = async (req, res) => {
   })
   await newBlog.save()
 
-  res.status(200).json(newBlog).end()  
+  const populatedBlog = await Blog.findById(newBlog._id).populate('user', {
+    username: 1,
+    name: 1
+  })
+
+  res.status(200).json(populatedBlog).end()  
 
 }
 
@@ -75,7 +83,7 @@ exports.updateBlog = async (req, res) => {
 
 exports.likeBlog = async (req, res) => {
   const { id } = req.params
-  const updatedObj = await Blog.findById(
+  const updatedObj = await Blog.findByIdAndUpdate(
     id,
     { $inc: { likes: 1 } },
     { new: true }
