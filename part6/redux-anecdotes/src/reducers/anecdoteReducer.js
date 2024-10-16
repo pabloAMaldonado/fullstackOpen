@@ -1,3 +1,4 @@
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -21,19 +22,26 @@ const initialState = {
   anecdotes: anecdotesAtStart.map(asObject),
 }
 const reducer = (state = initialState, action) => {
-  switch(action.type) {
-    case 'VOTE_ANECDOTE':
-      const id = action.payload.id
+  switch (action.type) {
+    case 'VOTE_ANECDOTE': {
+      const id = action.payload.id;
       return {
-        ...state,  // Spread the existing state
+        ...state,
         anecdotes: state.anecdotes.map(anecdote => 
           anecdote.id === id
-            ? { ...anecdote, votes: anecdote.votes + 1 }  // Update the votes for the matching anecdote
+            ? { ...anecdote, votes: anecdote.votes + 1 }
             : anecdote
         )
-      }
+      };
+    }
+    case 'NEW_ANECDOTE': {
+      const newAnecdote = asObject(action.payload.content)
+      return {
+        ...state,
+        anecdotes: [...state.anecdotes, newAnecdote]
+      }}
     default:
-      return state
+      return state;
   }
 }
 
@@ -43,4 +51,12 @@ export const voteAnecdote = (id) => {
     payload: { id }
   }
 }
+
+export const createAnecdote = (content) => {
+  return {
+    type: 'NEW_ANECDOTE',
+    payload: { content }
+  }
+}
+
 export default reducer
