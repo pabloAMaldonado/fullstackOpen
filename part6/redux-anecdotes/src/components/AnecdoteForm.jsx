@@ -2,8 +2,18 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { newAnecdote } from '../reducers/anecdoteReducer'
+import { newAnecdotes } from '../reducers/anecdoteReducer'
 import { setNotificationWithTimeout } from '../reducers/notiReducer'
+
+const asObject = (anecdote) => {
+  return {
+    content: anecdote,
+    id: getId(),
+    votes: 0
+  }
+}
+
+const getId = () => (100000 * Math.random()).toFixed(0)
 
 const AnecdoteForm = () => {
     const [anecdote, setAnecdote] = useState('')
@@ -11,8 +21,11 @@ const AnecdoteForm = () => {
 
     const inputSubmit = (event) => {
         event.preventDefault()
-        dispatch(newAnecdote(anecdote))
-        dispatch(setNotificationWithTimeout('The new anecdote was added succesfully.'))
+        const newAnecdote = asObject(anecdote)
+
+        dispatch(newAnecdotes(newAnecdote))
+        dispatch(setNotificationWithTimeout('The new anecdote was added succesfully.', 10))
+
         setAnecdote('')
       }
     

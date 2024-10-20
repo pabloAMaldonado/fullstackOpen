@@ -12,5 +12,6 @@ const store = configureStore({
       notification: notificationSlice
     }
   })
+
   
 export default store
