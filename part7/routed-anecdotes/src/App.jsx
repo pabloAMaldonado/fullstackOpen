@@ -4,6 +4,8 @@ import {
   Routes, Route, Link, useNavigate, useParams
 } from 'react-router-dom'
 
+import { useField } from './hooks'
+
 const Menu = () => {
   const padding = {
     paddingRight: 5
@@ -41,6 +43,7 @@ const Anecdote = ({ anecdotes }) => {
   return(
     <div>
       <h2>{anecdote.content}</h2>
+      <p>by {anecdote.author}</p>
       <p>has {anecdote.votes} votes</p>
     </div>
   )
@@ -69,22 +72,28 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('content')
+  const author = useField('author')
+  const info = useField('info')
 
   const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.inputProps.value,
+      author: author.inputProps.value,
+      info: info.inputProps.value,
       votes: 0
     })
     props.notificationHandler('New anecdote has been added.', 5)
     navigate('/')
+  }
+
+  const clearHandler = () => {
+    content.onClear()
+    author.onClear()
+    info.onClear()
   }
 
   return (
@@ -93,21 +102,21 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content.inputProps} />
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author.inputProps} />
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          <input {...info.inputProps} />
         </div>
-        <button>create</button>
+        <button type='submit'>create</button>
+        <button type='button' onClick={clearHandler}>reset</button>
       </form>
     </div>
   )
-
 }
 
 const App = () => {
