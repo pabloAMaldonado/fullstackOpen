@@ -1,0 +1,20 @@
+.gridUsers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px;
+    align-items: center;
+    width: 25%;
+}
+
+.gridUsers > div {
+    display: contents;
+}
+
+.gridUsers > div > p {
+    margin: 0;
+}
+
+.gridUsers > div:first-child > p:nth-child(2) {
+    font-weight: bolder;
+}

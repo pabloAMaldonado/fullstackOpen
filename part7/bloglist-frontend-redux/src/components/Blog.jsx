@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
+import { Form } from 'react-bootstrap'
 
-import { sendLikeBlog, removeBlog, newBlog, initializeBlogs } from '../reducers/blogReducer'
+import { sendLikeBlog, removeBlog, newBlog } from '../reducers/blogReducer'
 import useField from '../hook/useField'
 
 const Blog = ({ blog, isFull, toggleExpand }) => {
@@ -29,7 +30,7 @@ const Blog = ({ blog, isFull, toggleExpand }) => {
 			{isFull ? (
 				<>
 					<p>
-						{blog.title}
+						<Link to={`/blogs/${blog.id}`} >{blog.title}</Link>
 						<button
 							onClick={toggleExpand}
 							style={{ cursor: 'pointer' }}
@@ -56,7 +57,7 @@ const Blog = ({ blog, isFull, toggleExpand }) => {
 				</>
 			) : (
 				<>
-					{blog.title} by {blog.author}
+					<Link to={`/blogs/${blog.id}`} >{blog.title}</Link> by {blog.author}
 					<button
 						onClick={toggleExpand}
 						style={{ cursor: 'pointer' }}
@@ -96,12 +97,6 @@ const LikeButton = ({ handleLike }) => {
 }
 
 const DisplayBlogs = () => {
-	const dispatch = useDispatch()
-
-	useEffect(() => {
-		dispatch(initializeBlogs())
-	}, [dispatch])
-
 	const [expandedBlogs, setExpandedBlogs] = useState({})
 	const blogs = useSelector(state => state.blog)
 
@@ -130,8 +125,13 @@ const DisplayBlogs = () => {
 		return <p>No blogs...</p>
 	}
 
+	const blogsStyle = {
+		margin: 'auto',
+		width: '70%'
+	}
+
 	return (
-		<>
+		<div style={blogsStyle}>
 			{blogSorted.map((blog) => (
 				<Blog
 					key={blog.id}
@@ -140,7 +140,7 @@ const DisplayBlogs = () => {
 					toggleExpand={() => toggleExpand(blog.id)}
 				/>
 			))}
-		</>
+		</div >
 	)
 }
 
@@ -158,7 +158,6 @@ const FormBlogs = ({ setShow }) => {
 			author: author.spread.value,
 			url: url.spread.value
 		}
-		console.log(data, user.token)
 		dispatch(newBlog(data, user.token))
 
 		title.clear()
@@ -167,40 +166,42 @@ const FormBlogs = ({ setShow }) => {
 		setShow(false)
 	}
 
+	const styleForm = {
+		width: '30%',
+		margin: '0 5%',
+		border: '1px solid',
+		borderRadius: '15px',
+		padding: '10px'
+	}
+
 	return (
 		<>
-			<h1>Post a Blog</h1>
-			<form onSubmit={handleNewBlog}>
-				<div>
-					title:
-					<input
+
+			<Form style={styleForm} onSubmit={handleNewBlog}>
+				<h1>Post a Blog</h1>
+				<Form.Group>
+					<Form.Label>title:</Form.Label>
+					<Form.Control
 						{...title.spread}
 					/>
-				</div>
-				<div>
-					author:
-					<input
+				</Form.Group>
+				<Form.Group>
+					<Form.Label>author:</Form.Label>
+					<Form.Control
 						{...author.spread}
 					/>
-				</div>
-				<div>
-					url:
-					<input
+				</Form.Group>
+				<Form.Group>
+					<Form.Label>url:</Form.Label>
+					<Form.Control
 						{...url.spread}
 					/>
-				</div>
+				</Form.Group>
 				<button type='submit'>Post</button>
 				<button onClick={() => setShow(false)}>Cancel</button>
-			</form>
+			</Form>
 		</>
 	)
-}
-
-FormBlogs.propTypes = {
-	setShow: PropTypes.func.isRequired,
-	blogs: PropTypes.array.isRequired,
-	setBlogs: PropTypes.func.isRequired,
-	setNoti: PropTypes.func.isRequired,
 }
 
 export default {

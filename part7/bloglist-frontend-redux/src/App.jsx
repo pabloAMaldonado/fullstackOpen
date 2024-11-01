@@ -1,48 +1,36 @@
-import { useState } from 'react'
-import './app.css'
-import { useSelector, useDispatch } from 'react-redux'
 
-import Blog from './components/Blog'
-import LoginForm from './components/User'
-import Notification from './components/Notification'
-import { logoutToken } from './reducers/userReducer'
+import { initializeBlogs } from './reducers/blogReducer'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import {
+	BrowserRouter as Router,
+	Routes, Route
+} from 'react-router-dom'
+
+
+import './app.css'
+import MainPage from './components/pages/MainPage'
+import UsersPage from './components/pages/UsersPage'
+import UserPage from './components/pages/UserPage'
+import BlogPage from './components/pages/BlogPage'
 
 const App = () => {
-	const user = useSelector(state => state.user)
-
-	const [showBlogForm, setShowBlogForm] = useState(false)
 	const dispatch = useDispatch()
 
+	useEffect(() => {
+		dispatch(initializeBlogs())
+	}, [dispatch])
+
 	return (
-		<div>
-			<Notification />
+		<Router>
+			<Routes>
+				<Route path='/' element={<MainPage />} />
+				<Route path='/users' element={<UsersPage />} />
+				<Route path= '/users/:id' element={<UserPage />} />
+				<Route path='/blogs/:id' element={<BlogPage />} />
+			</Routes>
+		</Router>
 
-			{!user && (
-				<LoginForm />
-			)}
-
-			{user && (
-				<>
-					<h2>blogs</h2>
-					<p>{user.name} logged in</p>
-					<button onClick={(event) => {dispatch(logoutToken(event))}}>Logout</button>
-				</>
-			)}
-
-			{user !== null && showBlogForm && (
-				<Blog.FormBlogs setShow={setShowBlogForm} />
-			)}
-
-			<br />
-
-			{showBlogForm === false && user !== null && (
-				<button onClick={() => setShowBlogForm(true)}>New Blog</button>
-			)}
-
-			{user !== null && (
-				<Blog.DisplayBlogs />
-			)}
-		</div>
 	)
 }
 
