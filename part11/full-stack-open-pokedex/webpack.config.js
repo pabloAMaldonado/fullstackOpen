@@ -1,7 +1,11 @@
-const HtmlWebPackPlugin = require("html-webpack-plugin");
-const path = require('path');
+import HtmlWebPackPlugin from "html-webpack-plugin";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   entry: "./src/index.jsx",
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -15,6 +19,9 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env", "@babel/preset-react"]
+          }
         },
       },
       {

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, useMatch } from 'react-router-dom'
 import { useApi } from './useApi'

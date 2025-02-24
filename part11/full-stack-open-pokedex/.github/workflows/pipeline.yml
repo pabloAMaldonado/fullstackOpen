@@ -1,0 +1,38 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+      - name: Check style
+        run: pnpm run eslint
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Run E2E tests
+        uses: cypress-io/github-action@v5
+        with:
+          start: |
+            pnpm run build
+            pnpm run start-prod
+          command: pnpm run test:e2e
+          wait-on: http://localhost:5000
+
+      - name: Print server logs
+        run: cat logs/server.log || echo "No logs found" || true
