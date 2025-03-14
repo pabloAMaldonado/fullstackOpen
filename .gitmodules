@@ -1,3 +1,6 @@
 [submodule "part11/full-stack-open-pokedex"]
 	path = part11/full-stack-open-pokedex
 	url = https://github.com/pabloAMaldonado/full-stack-open-pokedex
+[submodule "part11/urOwnPipeline"]
+	path = part11/urOwnPipeline
+	url = https://github.com/pabloAMaldonado/urOwnPipeline.git

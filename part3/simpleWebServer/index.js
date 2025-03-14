@@ -10,10 +10,7 @@ const Number = require('./src/model.js')
 
 require('dotenv').config()
 
-const password = process.env.API_PASSWORD
-
-const url =
-  `mongodb+srv://paamaldo:${password}@cluster0.yhagtdr.mongodb.net/FullstackOpen?retryWrites=true&w=majority`
+const url = process.env.MONGODB_URI
 
 mongoose.set('strictQuery',false)
 
